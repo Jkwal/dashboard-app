@@ -1,12 +1,26 @@
 import {configureStore} from "@reduxjs/toolkit";
+
+import {persistStore, persistReducer,} from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import {combineReducers} from "@reduxjs/toolkit";
+
 import {filterReducer} from "./features/filter/filter-slice";
 import {positionReducer} from "./features/positions/position-slice";
 
+const rootReducer = combineReducers({
+    filters: filterReducer,
+    positions: positionReducer,
+})
+const persistConfig = {
+    key: 'root',
+    storage,
+}
+
+const persistedReducer = persistReducer(persistConfig, rootReducer)
 
 export const store = configureStore({
-    reducer: {
-        filters: filterReducer,
-        positions: positionReducer,
-    },
+    reducer: persistedReducer,
     devTools: true,
 });
+
+export const persistor = persistStore(store);
